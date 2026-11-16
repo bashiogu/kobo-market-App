@@ -1,10 +1,14 @@
 const express = require('express');
-const { CreateEscrow, ReleaseEscrow } = require('../controllers/escrow.controllers');
 const router = express.Router();
 
 
-router.post('/hold', CreateEscrow);
-router.post('/release', ReleaseEscrow);
+const { CreateEscrow, ReleaseEscrow } = require('../controllers/escrow.controllers');
+const { protect } = require('../middleware/auth.middleware');
+
+
+
+router.post('/hold', protect, CreateEscrow);
+router.post('/release', protect, ReleaseEscrow);
 
 
 
