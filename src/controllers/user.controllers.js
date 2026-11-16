@@ -4,16 +4,17 @@ const crypto = require("crypto");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const sendEmail = require("../helpers/email");
 
 
 
 const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
-    port: process.emv.EMAIL_PORT,
+    port: process.env.EMAIL_PORT,
     secure: false,
     auth: {
         user: process.env.EMAIL_USER,
-        password: process.env.EMAIL_PASSWORD,
+        pass: process.env.EMAIL_PASSWORD,
     },
 });
 
@@ -26,13 +27,13 @@ const Register = async (req, res) => {
   }
 
 const pgClient = await pool.connect();
-let createdUser = null;
 
 try {
     await pgClient.query('BEGIN');
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
+        await pgClient.query('ROLLBACK');
         return res.status(400).json({ message: 'User already exists.'});
     }
 
@@ -42,7 +43,7 @@ try {
     const user = new User({
         firstName, lastName, email, password: hashedPassword, role, isEmailVerified: false, emailVerificationToken: verificationToken, emailVerificationExpires: Date.now() + 3600000
     });
-    await user.save();
+    const createdUser = await user.save();
 
     const idStr = createdUser._id.toString();
 
@@ -54,13 +55,11 @@ try {
     await pgClient.query(ledgerQuery, [txId, availRes.rows[0].id, 0, 'Account opened at zero balance']);
     await pgClient.query(ledgerQuery,[txId, escrowRes.rows[0].id, 0, 'Escrow tracker opened at zero balance']);
 
-    await transporter.sendMail({
-        from: `"kobo Market" <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: "Account verification",
-        text: `Your verification token is: ${verificationToken}`,
-        html: `<p>Welcome to Kobo MArket!</p><p>Use this token to verify your email: <b>${verificationToken}</b></p>`
-    });
+    await sendEmail(
+      email,
+      "Account verification",
+      `Your verification token is: ${verificationToken}`
+    );
 
     await pgClient.query('COMMIT');
     return res.status(201).json({ message: 'Registration successful. Please check your email for verification token if not verified'});
@@ -68,7 +67,7 @@ try {
 } catch (error) {
     await pgClient.query('ROLLBACK');
     if(error && error.code !== 11000) {
-        await user.deleteOne({ email });
+        await User.deleteOne({ email });
     }
     return res.status(500).json({ message: 'Registration error', details: error.message });
 } finally {
