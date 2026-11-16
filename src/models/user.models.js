@@ -24,9 +24,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    roles: {
-      type: [String],
-      default: ["buyer"],
+    role: {
+      type: String,
+      enum: ["buyer", "vendor"],
+      default: "buyer",
     },
     isEmailVerified: {
       type: Boolean,

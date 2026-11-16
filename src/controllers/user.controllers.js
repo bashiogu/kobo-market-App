@@ -102,13 +102,11 @@ const Signin = async (req, res) => {
         user.emailVerificationExpires = Date.now() + 3600000;
         await user.save();
 
-        await transporter.sendMail({
-            from: `"Kobo Market" <${process.env.EMAIL_USER}>`,
-            to: user.email,
-            subject: "Account verification",
-            text: `Your new verification token is: ${newVerificationToken}`,
-            html: `<p>Your is not verified yet.</p><p>Use this token to verify your email: <b>${newVerificationToken}</b></p>`
-        });
+       await sendEmail(
+        email,
+        "Account verification",
+        `Your verification token is: ${verificationToken}`
+       );
         return res.status(403).json({ message: 'Email not verified. Verification token sent to your email.'});
     }
 
