@@ -13,7 +13,8 @@ app.use(express.json());
 const userRoutes = require("./routes/user.routes");
 const escrowRoutes = require('./routes/escrow.routes.js');
 const walletRoutes = require('./routes/wallet.routes.js');
-
+const productRoutes = require('./routes/product.routes.js');
+const cartRoutes = require('./routes/cart.routes.js');
 
 
 
@@ -26,7 +27,8 @@ app.get("/", (req, res) => {
 app.use("/api/v1/user", userRoutes);
 app.use('/api/v1/escrow', escrowRoutes);
 app.use('/api/v1/wallet', walletRoutes);
-
+app.use('/api/v1/products', productRoutes);
+app.use('/api/v1/cart', cartRoutes);
 
 
 app.listen(PORT, () => {
