@@ -17,6 +17,7 @@ const productRoutes = require('./routes/product.routes.js');
 const cartRoutes = require('./routes/cart.routes.js');
 const orderRoutes = require('./routes/order.routes.js');
 const reviewRoutes = require('./routes/review.routes.js');
+const adminRoutes = require('./routes/admin.routes.js');
 
 
 
@@ -33,6 +34,7 @@ app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/cart', cartRoutes);
 app.use('/api/v1/orders', orderRoutes);
 app.use('/api/v1/reviews', reviewRoutes);
+app.use('/api/v1/admin', adminRoutes);
 
 
 app.listen(PORT, () => {
