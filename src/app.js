@@ -15,6 +15,8 @@ const escrowRoutes = require('./routes/escrow.routes.js');
 const walletRoutes = require('./routes/wallet.routes.js');
 const productRoutes = require('./routes/product.routes.js');
 const cartRoutes = require('./routes/cart.routes.js');
+const orderRoutes = require('./routes/order.routes.js');
+const reviewRoutes = require('./routes/review.routes.js');
 
 
 
@@ -29,6 +31,8 @@ app.use('/api/v1/escrow', escrowRoutes);
 app.use('/api/v1/wallet', walletRoutes);
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/cart', cartRoutes);
+app.use('/api/v1/orders', orderRoutes);
+app.use('/api/v1/reviews', reviewRoutes);
 
 
 app.listen(PORT, () => {
